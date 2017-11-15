@@ -1,0 +1,29 @@
+{
+  "name": "node-howmuch",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "npm-run-all": "^4.1.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-node7": "^1.5.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.0",
+    "prettier": "^1.4.4"
+  },
+  "scripts": {
+    "precommit": "lint-staged",
+    "build": "rm -rf dist && babel src --out-dir=dist",
+    "start": "yarn build && node .",
+    "test": "babel-node scripts/run-test"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --no-semi --print-width 120",
+      "git add"
+    ]
+  }
+}
