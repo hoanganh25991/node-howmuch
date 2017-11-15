@@ -6,6 +6,9 @@ const QuestionSchema = new Schema({
   text: {
     type: String
   },
+  order: {
+    type: Number
+  },
   answers: []
 })
 
