@@ -18,6 +18,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
+    "postmerge": "yarn build:dev",
     "build": "rm -rf dist && babel src --out-dir=dist",
     "start": "yarn build && node .",
     "build:dev":"babel src --out-dir=dist",
