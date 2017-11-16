@@ -1,6 +1,6 @@
 import express from "express"
 import { getAll as getAllQuestions, next as getNextQuestion } from "../mongodb/question"
-import { getAll as getAllAnswers, getAnswerSession, updateAnswerSession } from "../mongodb/answer"
+import { getAll as getAllAnswers, getAnswerSession, updateAnswerSession, getSummary } from "../mongodb/answer"
 
 const _router = express.Router()
 
@@ -29,6 +29,11 @@ _router.post("/answers/sessionId", async (req, res) => {
 _router.put("/answers/sessionId", async (req, res) => {
   const answer = await updateAnswerSession(req.body)
   res.json({ answer })
+})
+
+_router.post("/summary/sessionId", async (req, res) => {
+  const { summary, ratio } = await getSummary(req.body.sessionId)
+  res.json({ summary, ratio })
 })
 
 export const router = _router

@@ -21,3 +21,17 @@ export const updateAnswerSession = data => {
     .exec()
     .catch(err => err)
 }
+
+export const getSummary = async sessionId => {
+  const Answer = mongoose.model("Answer")
+  const answer = await Answer.findOne({ sessionId })
+    .exec()
+    .catch(err => err)
+
+  // Do compute logic with answer
+
+  return {
+    summary: Math.floor(Math.random() * 10000),
+    ratio: 1.35
+  }
+}
