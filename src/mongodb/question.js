@@ -17,7 +17,7 @@ export const next = ({ order, questionIds }) => {
       $nin: questionIds
     }
   })
-    .sort({ order: -1 })
+    .sort({ order: 1 })
     .exec()
     .catch(err => err)
 }
