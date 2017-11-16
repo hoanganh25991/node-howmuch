@@ -32,10 +32,13 @@ const ansArr1 = [
 ]
 
 const expectedMultiplyTotal = 3.6
-const expectedSummary = 1000 + 500 * 3.6 + (1400 + 400 * 3.6)
+// const expectedSummary = 1000 + 500 * 3.6 + (1400 + 400 * 3.6)
+const expectedSummary = 5640
 
 const summary = computeSummary(ansArr1)
 
 const pass = expectedSummary === summary
 
-return pass ? _(`\x1b[42m[PASS]\x1b[0m ${TEST_CASE}`) : _(`\x1b[41m[FAIL]\x1b[0m ${TEST_CASE}`)
+_("summary", summary)
+
+pass ? _(`\x1b[42m[PASS]\x1b[0m ${TEST_CASE}`) : _(`\x1b[41m[FAIL]\x1b[0m ${TEST_CASE}`)

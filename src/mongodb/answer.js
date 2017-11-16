@@ -30,17 +30,25 @@ export const updateAnswerSession = data => {
 export const computeSummary = answers => {
   // Find platform answer
   const platormAnsArr = answers.filter(ans => ans.type === PLATFORM)
-  const multiply = platormAnsArr.reduce((carry, ans) => ({ ...carry, ...ans }), {})
-  _(multiply)
+  const multiply = platormAnsArr.reduce((carry, ans) => ({ ...carry, ...ans.multiply }), {})
 
-  const multiplyAnsArr = answers.filter(ans => ans.type === MULTIPLY)
+  _("multiply", multiply)
+
+  const multiplyAnsArr = answers.filter(ans => ans.type === MULTIPLY).map(ans => ans.multiply)
+
+  _("multiplyAnsArr", multiplyAnsArr)
+
   const lastMultiply = multiplyAnsArr.reduce((carry, multiply) => {
     const { ios: li = 1, android: la = 1, web: lw = 1 } = carry
     const { ios: ni = 1, android: na = 1, web: nw = 1 } = multiply
     return { ios: li * ni, android: la * na, web: lw * nw }
   }, {})
 
-  const multiplyTotal = Object.keys(lastMultiply).reduce((a, b) => a + b)
+  _("lastMultiply", lastMultiply)
+
+  const multiplyTotal = Object.keys(lastMultiply).reduce((carry, key) => carry + lastMultiply[key], 0)
+
+  _("multiplyTotal", multiplyTotal)
 
   // Compute summary
   const normalAnsArr = answers.filter(ans => ans.type !== PLATFORM && ans.type !== MULTIPLY)
