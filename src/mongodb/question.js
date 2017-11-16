@@ -10,7 +10,9 @@ export const getAll = () => {
 export const next = ({ order, questionIds }) => {
   const Question = mongoose.model("Question")
   return Question.findOne({
-    order,
+    order: {
+      $gte: order
+    },
     _id: {
       $nin: questionIds
     }
