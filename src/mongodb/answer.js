@@ -4,6 +4,7 @@ const _ = console.log
 const ratio = 1.35
 export const PLATFORM = "PLATFORM"
 export const MULTIPLY = "MULTIPLY"
+const platforms = ["ios", "android", "web"]
 
 export const getAll = () => {
   const Answer = mongoose.model("Answer")
@@ -30,9 +31,14 @@ export const updateAnswerSession = data => {
 export const computeSummary = answers => {
   // Find platform answer
   const platormAnsArr = answers.filter(ans => ans.type === PLATFORM)
-  const multiply = platormAnsArr.reduce((carry, ans) => ({ ...carry, ...ans.multiply }), {})
+  const rootmultiply = platormAnsArr.reduce((carry, ans) => ({ ...carry, ...ans.multiply }), {})
 
-  _("multiply", multiply)
+  platforms.forEach(platform => {
+    const notChoosen = typeof rootmultiply[platform] === "undefined"
+    if (notChoosen) rootmultiply[platform] = 0
+  })
+
+  _("multiply", rootmultiply)
 
   const multiplyAnsArr = answers.filter(ans => ans.type === MULTIPLY).map(ans => ans.multiply)
 
@@ -42,7 +48,7 @@ export const computeSummary = answers => {
     const { ios: li = 1, android: la = 1, web: lw = 1 } = carry
     const { ios: ni = 1, android: na = 1, web: nw = 1 } = multiply
     return { ios: li * ni, android: la * na, web: lw * nw }
-  }, {})
+  }, rootmultiply)
 
   _("lastMultiply", lastMultiply)
 
