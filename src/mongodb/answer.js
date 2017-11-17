@@ -5,7 +5,7 @@ export const PLATFORM = "PLATFORM"
 export const MULTIPLY = "MULTIPLY"
 
 const ratio = 1.35
-const platforms = ["ios", "android", "web"]
+const availablePlatforms = ["ios", "android", "web"]
 
 export const getAll = () => {
   const Answer = mongoose.model("Answer")
@@ -31,37 +31,33 @@ export const updateAns = data => {
 
 export const computeSummary = answers => {
   // Find platform answer
-  const platormAnsArr = answers.filter(ans => ans.type === PLATFORM)
-  const rootmultiply = platormAnsArr.reduce((carry, ans) => ({ ...carry, ...ans.multiply }), {})
+  const platformAns = answers.filter(ans => ans.type === PLATFORM).map(ans => ans.multiply)
+  const rootMultiply = platformAns.reduce((carry, multiply) => ({ ...carry, ...multiply }), {})
 
-  platforms.forEach(platform => {
-    const notChoosen = typeof rootmultiply[platform] === "undefined"
-    if (notChoosen) rootmultiply[platform] = 0
+  // Not choosen platform as 0 value
+  availablePlatforms.forEach(platform => {
+    const notChoosen = typeof rootMultiply[platform] === "undefined"
+    if (notChoosen) rootMultiply[platform] = 0
   })
 
-  _("multiply", rootmultiply)
+  // Find multiply answer
+  const multiplyAns = answers.filter(ans => ans.type === MULTIPLY).map(ans => ans.multiply)
 
-  const multiplyAnsArr = answers.filter(ans => ans.type === MULTIPLY).map(ans => ans.multiply)
-
-  _("multiplyAnsArr", multiplyAnsArr)
-
-  const lastMultiply = multiplyAnsArr.reduce((carry, multiply) => {
+  // Combine all multiply value
+  const combinedMultiply = multiplyAns.reduce((carry, multiply) => {
     const { ios: li = 1, android: la = 1, web: lw = 1 } = carry
     const { ios: ni = 1, android: na = 1, web: nw = 1 } = multiply
     return { ios: li * ni, android: la * na, web: lw * nw }
-  }, rootmultiply)
+  }, rootMultiply)
 
-  _("lastMultiply", lastMultiply)
+  const multiplyTotal = Object.values(combinedMultiply).reduce((a, b) => a + b, 0)
 
-  const multiplyTotal = Object.keys(lastMultiply).reduce((carry, key) => carry + lastMultiply[key], 0)
+  _("combinedMultiply, multiplyTotal", combinedMultiply, multiplyTotal)
 
-  _("multiplyTotal", multiplyTotal)
-
-  // Compute summary
-  const normalAnsArr = answers.filter(ans => ans.type !== PLATFORM && ans.type !== MULTIPLY)
-
+  // Normal answer with pay & fixed_pay
+  const normalAns = answers.filter(ans => ans.type !== PLATFORM && ans.type !== MULTIPLY)
   // Do compute logic with answer
-  return normalAnsArr.reduce((carry, ans) => {
+  return normalAns.reduce((carry, ans) => {
     const { pay, fixed_pay } = ans
     return carry + fixed_pay + pay * multiplyTotal
   }, 0)

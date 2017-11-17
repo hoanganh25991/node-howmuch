@@ -395,7 +395,7 @@ const ansArr1 = [
 ]
 
 const expectedMultiplyTotal = 2
-const expectedSummary = 4740
+const expectedSummary = 62300
 
 const summary = computeSummary(ansArr1)
 
