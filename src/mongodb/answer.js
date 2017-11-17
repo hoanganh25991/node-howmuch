@@ -1,9 +1,10 @@
 import mongoose from "mongoose"
 
 const _ = console.log
-const ratio = 1.35
 export const PLATFORM = "PLATFORM"
 export const MULTIPLY = "MULTIPLY"
+
+const ratio = 1.35
 const platforms = ["ios", "android", "web"]
 
 export const getAll = () => {
@@ -13,17 +14,17 @@ export const getAll = () => {
     .catch(err => err)
 }
 
-export const getAnswerSession = sessionId => {
+export const findAns = sessionId => {
   const Answer = mongoose.model("Answer")
   return Answer.findOne({ sessionId })
     .exec()
     .catch(err => err)
 }
 
-export const updateAnswerSession = data => {
+export const updateAns = data => {
   const Answer = mongoose.model("Answer")
   const { sessionId } = data
-  return Answer.update({ sessionId }, data, { upsert: true })
+  return Answer.update({ sessionId }, data, { upsert: true, new: true })
     .exec()
     .catch(err => err)
 }

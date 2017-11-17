@@ -1,39 +1,69 @@
 import express from "express"
-import { getAll as getAllQuestions, next as getNextQuestion } from "../mongodb/question"
-import { getAll as getAllAnswers, getAnswerSession, updateAnswerSession, getSummary } from "../mongodb/answer"
+import { getAll as getAllQues, next as findNextQues, importList as importQues } from "../mongodb/question"
+import { getAll as getAllAns, findAns, updateAns, getSummary } from "../mongodb/answer"
 
-const _router = express.Router()
+const a = express.Router()
 
-_router.get("/questions", async (req, res) => {
-  const questions = await getAllQuestions()
-  res.json({ questions })
+const GET_ALL_QUESTIONS = "GET_ALL_QUESTIONS"
+const FIND_NEXT_QUESTION = "FIND_NEXT_QUESTION"
+const IMPORT_QUESTIONS = "IMPORT_QUESTIONS"
+
+const GET_ALL_ANSWERS = "GET_ALL_ANSWERS"
+const FIND_ANSWER = "FIND_ANSWER"
+const UPDATE_ANSWER = "UPDATE_ANSWER"
+const SUMMARY_ANSWER = "SUMMARY_ANSWER"
+
+a.post("/questions", async (req, res) => {
+  const { type } = req.body
+
+  switch (type) {
+    case GET_ALL_QUESTIONS: {
+      const questions = await getAllQues()
+      return res.json({ questions })
+    }
+    case FIND_NEXT_QUESTION: {
+      const { order, questionIds } = req.body
+      const question = await findNextQues({ order, questionIds })
+      return res.json({ question })
+    }
+    case IMPORT_QUESTIONS: {
+      const { questions } = req.body
+      const savedQues = await importQues(questions)
+      return res.json({ questions: savedQues })
+    }
+    default: {
+      const questions = await getAllQues()
+      return res.json({ questions })
+    }
+  }
 })
 
-_router.post("/questions/next", async (req, res) => {
-  const { order, questionIds } = req.body
-  const question = await getNextQuestion({ order, questionIds })
-  res.json({ question })
+a.post("/answers", async (req, res) => {
+  const { type } = req.body
+
+  switch (type) {
+    case GET_ALL_ANSWERS: {
+      const answers = await getAllAns()
+      return res.json({ answers })
+    }
+    case FIND_ANSWER: {
+      const { sessionId } = req.body
+      const answer = await findAns(sessionId)
+      return res.json({ answer })
+    }
+    case SUMMARY_ANSWER: {
+      const { summary, ratio } = await getSummary(req.body.sessionId)
+      return res.json({ summary, ratio })
+    }
+    case UPDATE_ANSWER: {
+      const answer = await updateAns(req.body)
+      return res.json({ answer })
+    }
+    default: {
+      const answers = await getAllAns()
+      return res.json({ answers })
+    }
+  }
 })
 
-_router.get("/answers", async (req, res) => {
-  const answers = await getAllAnswers()
-  res.json({ answers })
-})
-
-_router.post("/answers/sessionId", async (req, res) => {
-  const { sessionId } = req.body
-  const answer = await getAnswerSession(sessionId)
-  res.json({ answer })
-})
-
-_router.put("/answers/sessionId", async (req, res) => {
-  const answer = await updateAnswerSession(req.body)
-  res.json({ answer })
-})
-
-_router.post("/summary/sessionId", async (req, res) => {
-  const { summary, ratio } = await getSummary(req.body.sessionId)
-  res.json({ summary, ratio })
-})
-
-export const router = _router
+export const router = a
