@@ -80,7 +80,7 @@ export const getSummary = async sessionId => {
  * @param answers
  * @returns {*}
  */
-export const choosenPlatforms = answers => {
+export const findChoosenPlatforms = answers => {
   // Find platform answer
   const platformAns = answers.filter(ans => ans.type === PLATFORM).map(ans => ans.multiply)
   const rootMultiply = platformAns.reduce((carry, multiply) => ({ ...carry, ...multiply }), {})
@@ -92,4 +92,15 @@ export const choosenPlatforms = answers => {
   })
 
   return rootMultiply
+}
+
+export const getChoosenPlatforms = async sessionId => {
+  const Answer = mongoose.model("Answer")
+  const answer = await Answer.findOne({ sessionId })
+    .exec()
+    .catch(err => err)
+
+  const answers = (answer && answer.answers) || []
+  const platforms = findChoosenPlatforms(answers)
+  return { platforms }
 }
