@@ -73,3 +73,23 @@ export const getSummary = async sessionId => {
   const summary = computeSummary(answers)
   return { summary, ratio }
 }
+
+/**
+ * Return current choosen platforms
+ * Which helps filtering out answers in question
+ * @param answers
+ * @returns {*}
+ */
+export const choosenPlatforms = answers => {
+  // Find platform answer
+  const platformAns = answers.filter(ans => ans.type === PLATFORM).map(ans => ans.multiply)
+  const rootMultiply = platformAns.reduce((carry, multiply) => ({ ...carry, ...multiply }), {})
+
+  // Not choosen platform as 0 value
+  availablePlatforms.forEach(platform => {
+    const notChoosen = typeof rootMultiply[platform] === "undefined"
+    if (notChoosen) rootMultiply[platform] = 0
+  })
+
+  return rootMultiply
+}
